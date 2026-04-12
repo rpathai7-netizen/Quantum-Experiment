@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quantum-experiment"
+version = "1.0.0"
+description = "Production-ready quantum computing platform with local simulation, cloud integration, and advanced analysis"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "rpathai7-netizen", email = ""}
+]
+keywords = ["quantum", "quantum-computing", "quantum-simulation", "qiskit", "ibm-quantum", "aws-braket"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
+
+dependencies = [
+    "qiskit>=0.41.0",
+    "qiskit-aer>=0.12.0",
+    "numpy>=1.20.0",
+]
+
+[project.optional-dependencies]
+cloud = [
+    "qiskit-ibm-runtime>=0.13.0",
+    "amazon-braket-sdk>=1.20.0",
+    "cirq>=1.0.0",
+]
+dev = [
+    "pytest>=7.0.0",
+    "black>=22.0.0",
+    "flake8>=4.0.0",
+    "mypy>=0.950",
+]
+
+[project.urls]
+Homepage = "https://github.com/rpathai7-netizen/Quantum-Experiment"
+"Bug Tracker" = "https://github.com/rpathai7-netizen/Quantum-Experiment/issues"
+"Documentation" = "https://github.com/rpathai7-netizen/Quantum-Experiment/blob/main/README.md"
+"Source Code" = "https://github.com/rpathai7-netizen/Quantum-Experiment"
