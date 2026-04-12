@@ -1,6 +1,14 @@
 # Quantum Computing Experiment Platform
 
+[![GitHub Release](https://img.shields.io/github/v/release/rpathai7-netizen/Quantum-Experiment?include_prereleases&label=version)](https://github.com/rpathai7-netizen/Quantum-Experiment/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/downloads/)
+[![Qiskit](https://img.shields.io/badge/Qiskit-v0.41%2B-green)](https://qiskit.org/)
+[![Code of Conduct](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baadc.svg)](CODE_OF_CONDUCT.md)
+
 A complete, production-ready quantum computing system supporting local simulation, cloud integration, and advanced analysis. **Scales from 30 qubits to 6000+ qubits** using analytical methods.
+
+**Quick Links:** [📖 Docs](#-system-overview) | [⚡ Quick Start](QUICKSTART.md) | [📦 Installation](INSTALLATION.md) | [🚀 Features](FEATURES.md) | [❓ FAQ](FAQ.md) | [⭐ Star us](#-support)
 
 ## 📋 System Overview
 
@@ -384,3 +392,48 @@ This system is provided as-is for quantum computing experimentation.
 ---
 
 **Built with Qiskit | Supports IBM Quantum, AWS Braket, Google Cirq**
+
+---
+
+## 💬 Support
+
+Having trouble? Here's how to get help:
+
+- 📖 **Documentation**: Check [QUICKSTART.md](QUICKSTART.md), [INSTALLATION.md](INSTALLATION.md), or [FAQ.md](FAQ.md)
+- 🐛 **Bug Reports**: [Open an issue](../../issues) with details
+- 💡 **Feature Requests**: [Suggest features](../../issues/new) with use cases
+- 📚 **Learning**: Review [examples.py](examples.py) for code samples
+- 🤝 **Contributing**: See [CONTRIBUTING.md](CONTRIBUTING.md)
+
+## ⭐ Support the Project
+
+If you find this useful, please:
+
+- ⭐ **Star this repository** - Helps others discover it
+- 🐦 **Share on social media** - Spread the word
+- 📢 **Cite in your work** - Give credit
+- 🤝 **Contribute** - Submit PRs or issues
+- 📧 **Feedback** - Tell us what you think!
+
+---
+
+## 📞 Contact & Community
+
+- **Author**: rpathai7-netizen
+- **Repository**: [Quantum-Experiment](https://github.com/rpathai7-netizen/Quantum-Experiment)
+- **Issues**: [GitHub Issues](../../issues)
+- **License**: MIT - See [LICENSE](LICENSE)
+
+---
+
+## 🙏 Acknowledgments
+
+Built with:
+- [Qiskit](https://qiskit.org/) - Quantum computing framework
+- [IBM Quantum](https://quantum-computing.ibm.com/) - Cloud quantum hardware
+- [AWS Braket](https://aws.amazon.com/braket/) - Quantum services
+- Open-source community
+
+---
+
+**Ready to start?** ⚡ Jump to [QUICKSTART.md](QUICKSTART.md) now!
