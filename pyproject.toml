@@ -41,9 +41,20 @@ cloud = [
 ]
 dev = [
     "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
     "black>=22.0.0",
     "flake8>=4.0.0",
     "mypy>=0.950",
+    "isort>=5.10.0",
+    "autopep8>=1.6.0",
+    "bandit>=1.7.0",
+    "safety>=1.10.0",
+    "pdoc3>=3.3.0",
+]
+test = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-timeout>=2.1.0",
 ]
 
 [project.urls]

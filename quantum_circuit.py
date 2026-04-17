@@ -14,7 +14,7 @@ qc.h(0)
 # We loop through and connect every qubit to the one next to it using 'cx' (CNOT) gates.
 # If Qubit 0 changes, it instantly forces Qubits 1 through 29 to change as well.
 for i in range(29):
-    qc.cx(i, i+1)
+    qc.cx(i, i + 1)
 
 # 4. Measure the Qubits
 # This forces the quantum superposition to collapse into a classical binary answer (0s and 1s)

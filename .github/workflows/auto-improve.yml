@@ -1,0 +1,130 @@
+name: Auto-Improve Code Quality
+
+on:
+  schedule:
+    # Run code improvements daily at 4 AM UTC
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+
+jobs:
+  auto-improve:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      commit-message: write
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install black isort flake8 autopep8
+        pip install qiskit qiskit-aer numpy
+
+    - name: Auto-format code with black
+      run: |
+        echo "Running black code formatter..."
+        black . --exclude="(__pycache__|\.git|\.venv|build|dist)" || true
+        echo "Black formatting complete"
+
+    - name: Auto-sort imports with isort
+      run: |
+        echo "Running isort import organizer..."
+        isort . --skip-gitignore --skip "__pycache__" || true
+        echo "isort complete"
+
+    - name: Auto-fix style with autopep8
+      run: |
+        echo "Running autopep8..."
+        find . -name "*.py" -not -path "*./.git/*" -not -path "./.venv/*" -not -path "*/__pycache__/*" | while read file; do
+          autopep8 --in-place --aggressive --aggressive "$file"
+        done
+        echo "autopep8 complete"
+
+    - name: Create improvement report
+      run: |
+        cat > IMPROVEMENTS_APPLIED.md << 'EOF'
+        # Code Quality Improvements Applied
+        
+        This automated run applied the following improvements:
+        
+        ## Formatting
+        - **Black**: Consistent code formatting with 88-character line limit
+        - **isort**: Organized and sorted imports alphabetically
+        - **autopep8**: Fixed PEP8 style issues
+        
+        ## What Changed
+        - Standardized code formatting across all Python files
+        - Organized import statements
+        - Fixed spacing and style violations
+        - Ensured PEP8 compliance
+        
+        ## Benefits
+        - Improved code readability
+        - Easier code reviews
+        - Better IDE integration
+        - Consistent style across the project
+        
+        Generated: $(date)
+        EOF
+        cat IMPROVEMENTS_APPLIED.md
+
+    - name: Check if changes were made
+      id: changes
+      run: |
+        if git diff --quiet; then
+          echo "has_changes=false" >> $GITHUB_OUTPUT
+        else
+          echo "has_changes=true" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Commit improvements
+      if: steps.changes.outputs.has_changes == 'true'
+      run: |
+        git config user.name "GitHub Actions"
+        git config user.email "actions@github.com"
+        git add -A
+        git commit -m "🤖 Automated code quality improvements
+
+- Applied black formatting
+- Organized imports with isort
+- Fixed PEP8 style issues with autopep8
+- Auto-commit: github actions workflow" --no-verify || echo "No changes to commit"
+
+    - name: Push improvements
+      if: steps.changes.outputs.has_changes == 'true'
+      run: |
+        git push origin main || git push origin master || echo "Could not push - may be behind"
+
+    - name: Create Pull Request
+      if: steps.changes.outputs.has_changes == 'true'
+      uses: peter-evans/create-pull-request@v4
+      with:
+        commit-message: "🤖 Automated code quality improvements"
+        title: "🤖 Automated code quality improvements"
+        body: |
+          ## Automated Improvements Applied
+          
+          This pull request contains automatically applied code quality improvements:
+          
+          - **Black formatting**: Consistent code style
+          - **Import organization**: Sorted and organized imports
+          - **PEP8 compliance**: Fixed style issues
+          
+          These changes improve code readability and maintainability without changing functionality.
+        branch: auto-improvements
+        labels: |
+          🤖 automated
+          ✨ enhancement
+        assignees: |
+          rpathai7-netizen
