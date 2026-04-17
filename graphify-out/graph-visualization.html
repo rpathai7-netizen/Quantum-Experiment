@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Quantum Experiment - Knowledge Graph</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet" type="text/css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; }
+        
+        .container { display: flex; height: 100vh; }
+        
+        #network {
+            flex: 1;
+            background: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 100%);
+            border-right: 2px solid #333;
+        }
+        
+        .sidebar {
+            width: 300px;
+            background: white;
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .sidebar h2 { color: #333; margin-bottom: 20px; border-bottom: 2px solid #0066cc; padding-bottom: 10px; }
+        
+        .sidebar h3 { color: #666; font-size: 14px; margin-top: 15px; margin-bottom: 10px; text-transform: uppercase; }
+        
+        .stats {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+        
+        .stats div { margin: 8px 0; }
+        
+        .stats strong { color: #0066cc; }
+        
+        .node-list {
+            list-style: none;
+        }
+        
+        .node-list li {
+            padding: 8px;
+            margin: 5px 0;
+            background: #f0f0f0;
+            border-left: 3px solid #0066cc;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 12px;
+            transition: background 0.2s;
+        }
+        
+        .node-list li:hover {
+            background: #e0e7ff;
+        }
+        
+        .legend {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #ccc;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            font-size: 12px;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 2px;
+            margin-right: 8px;
+        }
+        
+        .controls {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .controls input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+            color: white;
+            padding: 15px;
+            margin: -20px -20px 20px -20px;
+            border-radius: 0;
+        }
+        
+        .header h1 { font-size: 16px; margin: 0; }
+        .header p { font-size: 12px; margin: 5px 0 0 0; opacity: 0.9; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="network"></div>
+        
+        <div class="sidebar">
+            <div class="header">
+                <h1>🔗 Knowledge Graph</h1>
+                <p>Quantum Experiment Platform</p>
+            </div>
+            
+            <div class="controls">
+                <input type="text" id="searchBox" placeholder="Search nodes..." />
+            </div>
+            
+            <div class="stats">
+                <div><strong>Nodes:</strong> 104</div>
+                <div><strong>Edges:</strong> 89</div>
+                <div><strong>Types:</strong> 3</div>
+            </div>
+            
+            <h3>🎯 God Nodes</h3>
+            <ul class="node-list" id="godNodes"></ul>
+            
+            <h3>All Nodes</h3>
+            <ul class="node-list" id="nodeList"></ul>
+            
+            <div class="legend">
+                <h3>Legend</h3>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #FF6B6B;"></div>
+                    <span>Module</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #4ECDC4;"></div>
+                    <span>Class</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #45B7D1;"></div>
+                    <span>Function</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #FFA07A;"></div>
+                    <span>Other</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Vis.js initialization
+        const nodes = new vis.DataSet([{'id': 0, 'label': 'Antimatter Engine', 'type': 'module', 'file': 'antimatter_engine.py', 'category': 'code_module'}, {'id': 1, 'label': 'annihilation_reactor', 'type': 'function', 'module': 'antimatter_engine', 'category': 'function'}, {'id': 2, 'label': 'teleportation_protocol', 'type': 'function', 'module': 'antimatter_engine', 'category': 'function'}, {'id': 3, 'label': 'run_benchmark', 'type': 'function', 'module': 'antimatter_engine', 'category': 'function'}, {'id': 4, 'label': 'Circuit Types', 'type': 'module', 'file': 'circuit_types.py', 'category': 'code_module'}, {'id': 5, 'label': 'QuantumCircuitFactory', 'type': 'class', 'module': 'circuit_types', 'category': 'quantum_class'}, {'id': 6, 'label': 'list_circuit_types', 'type': 'function', 'module': 'circuit_types', 'category': 'function'}, {'id': 7, 'label': 'create_entangled_chain', 'type': 'function', 'module': 'circuit_types', 'category': 'function'}, {'id': 8, 'label': 'create_ghz_state', 'type': 'function', 'module': 'circuit_types', 'category': 'function'}, {'id': 9, 'label': 'create_random_circuit', 'type': 'function', 'module': 'circuit_types', 'category': 'function'}, {'id': 10, 'label': 'create_qaoa_circuit', 'type': 'function', 'module': 'circuit_types', 'category': 'function'}, {'id': 11, 'label': 'create_grover_oracle', 'type': 'function', 'module': 'circuit_types', 'category': 'function'}, {'id': 12, 'label': 'create_vqe_ansatz', 'type': 'function', 'module': 'circuit_types', 'category': 'function'}, {'id': 13, 'label': 'create_quantum_walk', 'type': 'function', 'module': 'circuit_types', 'category': 'function'}, {'id': 14, 'label': 'create_deutsch_algorithm', 'type': 'function', 'module': 'circuit_types', 'category': 'function'}, {'id': 15, 'label': 'create_phase_estimation', 'type': 'function', 'module': 'circuit_types', 'category': 'function'}, {'id': 16, 'label': 'Cloud Integration', 'type': 'module', 'file': 'cloud_integration.py', 'category': 'code_module'}, {'id': 17, 'label': 'CloudQuantumProvider', 'type': 'class', 'module': 'cloud_integration', 'category': 'quantum_class'}, {'id': 18, 'label': 'IBMQuantumProvider', 'type': 'class', 'module': 'cloud_integration', 'category': 'quantum_class'}, {'id': 19, 'label': 'AWSBraketProvider', 'type': 'class', 'module': 'cloud_integration', 'category': 'class'}, {'id': 20, 'label': 'GoogleQuantumProvider', 'type': 'class', 'module': 'cloud_integration', 'category': 'quantum_class'}, {'id': 21, 'label': 'QuantumCloudManager', 'type': 'class', 'module': 'cloud_integration', 'category': 'quantum_class'}, {'id': 22, 'label': '__init__', 'type': 'function', 'module': 'cloud_integration', 'category': 'function'}, {'id': 23, 'label': 'authenticate', 'type': 'function', 'module': 'cloud_integration', 'category': 'function'}, {'id': 24, 'label': 'run_circuit', 'type': 'function', 'module': 'cloud_integration', 'category': 'function'}, {'id': 25, 'label': '__init__', 'type': 'function', 'module': 'cloud_integration', 'category': 'function'}, {'id': 26, 'label': 'authenticate', 'type': 'function', 'module': 'cloud_integration', 'category': 'function'}, {'id': 27, 'label': 'list_backends', 'type': 'function', 'module': 'cloud_integration', 'category': 'function'}, {'id': 28, 'label': 'run_circuit', 'type': 'function', 'module': 'cloud_integration', 'category': 'function'}, {'id': 29, 'label': '__init__', 'type': 'function', 'module': 'cloud_integration', 'category': 'function'}, {'id': 30, 'label': 'authenticate', 'type': 'function', 'module': 'cloud_integration', 'category': 'function'}, {'id': 31, 'label': 'list_backends', 'type': 'function', 'module': 'cloud_integration', 'category': 'function'}, {'id': 32, 'label': 'run_circuit', 'type': 'function', 'module': 'cloud_integration', 'category': 'function'}, {'id': 33, 'label': '__init__', 'type': 'function', 'module': 'cloud_integration', 'category': 'function'}, {'id': 34, 'label': 'authenticate', 'type': 'function', 'module': 'cloud_integration', 'category': 'function'}, {'id': 35, 'label': 'list_backends', 'type': 'function', 'module': 'cloud_integration', 'category': 'function'}, {'id': 36, 'label': '__init__', 'type': 'function', 'module': 'cloud_integration', 'category': 'function'}, {'id': 37, 'label': 'initialize_provider', 'type': 'function', 'module': 'cloud_integration', 'category': 'function'}, {'id': 38, 'label': 'show_all_backends', 'type': 'function', 'module': 'cloud_integration', 'category': 'function'}, {'id': 39, 'label': 'run_on_provider', 'type': 'function', 'module': 'cloud_integration', 'category': 'function'}, {'id': 40, 'label': 'Complete Publication', 'type': 'module', 'file': 'complete_publication.py', 'category': 'code_module'}, {'id': 41, 'label': 'Examples', 'type': 'module', 'file': 'examples.py', 'category': 'code_module'}, {'id': 42, 'label': 'example_basic_entanglement', 'type': 'function', 'module': 'examples', 'category': 'function'}, {'id': 43, 'label': 'example_scaling', 'type': 'function', 'module': 'examples', 'category': 'function'}, {'id': 44, 'label': 'example_circuit_comparison', 'type': 'function', 'module': 'examples', 'category': 'function'}, {'id': 45, 'label': 'example_state_analysis', 'type': 'function', 'module': 'examples', 'category': 'function'}, {'id': 46, 'label': 'example_cloud_computing', 'type': 'function', 'module': 'examples', 'category': 'function'}, {'id': 47, 'label': 'example_circuit_metrics', 'type': 'function', 'module': 'examples', 'category': 'function'}, {'id': 48, 'label': 'example_entanglement_detection', 'type': 'function', 'module': 'examples', 'category': 'function'}, {'id': 49, 'label': 'example_batch_processing', 'type': 'function', 'module': 'examples', 'category': 'function'}, {'id': 50, 'label': 'example_performance_benchmark', 'type': 'function', 'module': 'examples', 'category': 'function'}, {'id': 51, 'label': 'example_full_workflow', 'type': 'function', 'module': 'examples', 'category': 'function'}, {'id': 52, 'label': 'Finalize Publication', 'type': 'module', 'file': 'finalize_publication.py', 'category': 'code_module'}, {'id': 53, 'label': 'Final Benchmark', 'type': 'module', 'file': 'final_benchmark.py', 'category': 'code_module'}, {'id': 54, 'label': 'main', 'type': 'function', 'module': 'final_benchmark', 'category': 'function'}, {'id': 55, 'label': 'Generate Knowledge Graph', 'type': 'module', 'file': 'generate_knowledge_graph.py', 'category': 'code_module'}, {'id': 56, 'label': 'gen_knowledge_graph', 'type': 'function', 'module': 'generate_knowledge_graph', 'category': 'function'}, {'id': 57, 'label': 'create_quantum_knowledge_base', 'type': 'function', 'module': 'generate_knowledge_graph', 'category': 'function'}, {'id': 58, 'label': 'create_knowledge_report', 'type': 'function', 'module': 'generate_knowledge_graph', 'category': 'function'}, {'id': 59, 'label': 'Github Publish', 'type': 'module', 'file': 'github_publish.py', 'category': 'code_module'}, {'id': 60, 'label': 'Integrated Platform', 'type': 'module', 'file': 'integrated_platform.py', 'category': 'code_module'}, {'id': 61, 'label': 'QuantumExperimentPlatform', 'type': 'class', 'module': 'integrated_platform', 'category': 'quantum_class'}, {'id': 62, 'label': 'demo_basic_workflow', 'type': 'function', 'module': 'integrated_platform', 'category': 'function'}, {'id': 63, 'label': 'demo_circuit_types', 'type': 'function', 'module': 'integrated_platform', 'category': 'function'}, {'id': 64, 'label': 'demo_scaling', 'type': 'function', 'module': 'integrated_platform', 'category': 'function'}, {'id': 65, 'label': '__init__', 'type': 'function', 'module': 'integrated_platform', 'category': 'function'}, {'id': 66, 'label': 'create_circuit', 'type': 'function', 'module': 'integrated_platform', 'category': 'function'}, {'id': 67, 'label': 'run_local', 'type': 'function', 'module': 'integrated_platform', 'category': 'function'}, {'id': 68, 'label': 'run_cloud', 'type': 'function', 'module': 'integrated_platform', 'category': 'function'}, {'id': 69, 'label': 'analyze_results', 'type': 'function', 'module': 'integrated_platform', 'category': 'function'}, {'id': 70, 'label': 'get_circuit_metrics', 'type': 'function', 'module': 'integrated_platform', 'category': 'function'}, {'id': 71, 'label': '_log_execution', 'type': 'function', 'module': 'integrated_platform', 'category': 'function'}, {'id': 72, 'label': 'show_execution_log', 'type': 'function', 'module': 'integrated_platform', 'category': 'function'}, {'id': 73, 'label': 'list_available_circuits', 'type': 'function', 'module': 'integrated_platform', 'category': 'function'}, {'id': 74, 'label': 'show_cloud_backends', 'type': 'function', 'module': 'integrated_platform', 'category': 'function'}, {'id': 75, 'label': 'Measurement Analysis', 'type': 'module', 'file': 'measurement_analysis.py', 'category': 'code_module'}, {'id': 76, 'label': 'QuantumMeasurementAnalyzer', 'type': 'class', 'module': 'measurement_analysis', 'category': 'quantum_class'}, {'id': 77, 'label': 'QuantumCircuitBenchmark', 'type': 'class', 'module': 'measurement_analysis', 'category': 'quantum_class'}, {'id': 78, 'label': '__init__', 'type': 'function', 'module': 'measurement_analysis', 'category': 'function'}, {'id': 79, 'label': 'get_statistics', 'type': 'function', 'module': 'measurement_analysis', 'category': 'function'}, {'id': 80, 'label': 'calculate_shannon_entropy', 'type': 'function', 'module': 'measurement_analysis', 'category': 'function'}, {'id': 81, 'label': 'calculate_purity', 'type': 'function', 'module': 'measurement_analysis', 'category': 'function'}, {'id': 82, 'label': 'calculate_coherence', 'type': 'function', 'module': 'measurement_analysis', 'category': 'function'}, {'id': 83, 'label': 'calculate_single_qubit_probabilities', 'type': 'function', 'module': 'measurement_analysis', 'category': 'function'}, {'id': 84, 'label': 'calculate_correlations', 'type': 'function', 'module': 'measurement_analysis', 'category': 'function'}, {'id': 85, 'label': 'find_most_probable_states', 'type': 'function', 'module': 'measurement_analysis', 'category': 'function'}, {'id': 86, 'label': 'analyze_hamming_distance_distribution', 'type': 'function', 'module': 'measurement_analysis', 'category': 'function'}, {'id': 87, 'label': 'detect_entanglement_pattern', 'type': 'function', 'module': 'measurement_analysis', 'category': 'function'}, {'id': 88, 'label': 'print_detailed_report', 'type': 'function', 'module': 'measurement_analysis', 'category': 'function'}, {'id': 89, 'label': 'gate_count', 'type': 'function', 'module': 'measurement_analysis', 'category': 'function'}, {'id': 90, 'label': 'circuit_depth', 'type': 'function', 'module': 'measurement_analysis', 'category': 'function'}, {'id': 91, 'label': 'circuit_size', 'type': 'function', 'module': 'measurement_analysis', 'category': 'function'}, {'id': 92, 'label': 'Nuclear Pasta 3D', 'type': 'module', 'file': 'nuclear_pasta_3d.py', 'category': 'code_module'}, {'id': 93, 'label': 'get_ram_usage_gb', 'type': 'function', 'module': 'nuclear_pasta_3d', 'category': 'function'}, {'id': 94, 'label': 'create_nuclear_pasta_3d', 'type': 'function', 'module': 'nuclear_pasta_3d', 'category': 'function'}, {'id': 95, 'label': 'run_simulation', 'type': 'function', 'module': 'nuclear_pasta_3d', 'category': 'function'}, {'id': 96, 'label': 'Quantum Circuit', 'type': 'module', 'file': 'quantum_circuit.py', 'category': 'code_module'}, {'id': 97, 'label': 'Quantum Solar Walk', 'type': 'module', 'file': 'quantum_solar_walk.py', 'category': 'code_module'}, {'id': 98, 'label': 'get_ram_usage_gb', 'type': 'function', 'module': 'quantum_solar_walk', 'category': 'function'}, {'id': 99, 'label': 'create_solar_graph', 'type': 'function', 'module': 'quantum_solar_walk', 'category': 'function'}, {'id': 100, 'label': 'build_walk_circuit', 'type': 'function', 'module': 'quantum_solar_walk', 'category': 'function'}, {'id': 101, 'label': 'run_simulation', 'type': 'function', 'module': 'quantum_solar_walk', 'category': 'function'}, {'id': 102, 'label': 'Quick Benchmark', 'type': 'module', 'file': 'quick_benchmark.py', 'category': 'code_module'}, {'id': 103, 'label': 'log', 'type': 'function', 'module': 'quick_benchmark', 'category': 'function'}]);
+        const edges = new vis.DataSet([{'source': 0, 'target': 1, 'label': 'defines', 'type': 'structural'}, {'source': 0, 'target': 2, 'label': 'defines', 'type': 'structural'}, {'source': 0, 'target': 3, 'label': 'defines', 'type': 'structural'}, {'source': 4, 'target': 5, 'label': 'contains', 'type': 'structural'}, {'source': 4, 'target': 6, 'label': 'defines', 'type': 'structural'}, {'source': 4, 'target': 7, 'label': 'defines', 'type': 'structural'}, {'source': 4, 'target': 8, 'label': 'defines', 'type': 'structural'}, {'source': 4, 'target': 9, 'label': 'defines', 'type': 'structural'}, {'source': 4, 'target': 10, 'label': 'defines', 'type': 'structural'}, {'source': 4, 'target': 11, 'label': 'defines', 'type': 'structural'}, {'source': 4, 'target': 12, 'label': 'defines', 'type': 'structural'}, {'source': 4, 'target': 13, 'label': 'defines', 'type': 'structural'}, {'source': 4, 'target': 14, 'label': 'defines', 'type': 'structural'}, {'source': 4, 'target': 15, 'label': 'defines', 'type': 'structural'}, {'source': 16, 'target': 17, 'label': 'contains', 'type': 'structural'}, {'source': 16, 'target': 18, 'label': 'contains', 'type': 'structural'}, {'source': 16, 'target': 19, 'label': 'contains', 'type': 'structural'}, {'source': 16, 'target': 20, 'label': 'contains', 'type': 'structural'}, {'source': 16, 'target': 21, 'label': 'contains', 'type': 'structural'}, {'source': 16, 'target': 22, 'label': 'defines', 'type': 'structural'}, {'source': 16, 'target': 23, 'label': 'defines', 'type': 'structural'}, {'source': 16, 'target': 24, 'label': 'defines', 'type': 'structural'}, {'source': 16, 'target': 25, 'label': 'defines', 'type': 'structural'}, {'source': 16, 'target': 26, 'label': 'defines', 'type': 'structural'}, {'source': 16, 'target': 27, 'label': 'defines', 'type': 'structural'}, {'source': 16, 'target': 28, 'label': 'defines', 'type': 'structural'}, {'source': 16, 'target': 29, 'label': 'defines', 'type': 'structural'}, {'source': 16, 'target': 30, 'label': 'defines', 'type': 'structural'}, {'source': 16, 'target': 31, 'label': 'defines', 'type': 'structural'}, {'source': 16, 'target': 32, 'label': 'defines', 'type': 'structural'}, {'source': 16, 'target': 33, 'label': 'defines', 'type': 'structural'}, {'source': 16, 'target': 34, 'label': 'defines', 'type': 'structural'}, {'source': 16, 'target': 35, 'label': 'defines', 'type': 'structural'}, {'source': 16, 'target': 36, 'label': 'defines', 'type': 'structural'}, {'source': 16, 'target': 37, 'label': 'defines', 'type': 'structural'}, {'source': 16, 'target': 38, 'label': 'defines', 'type': 'structural'}, {'source': 16, 'target': 39, 'label': 'defines', 'type': 'structural'}, {'source': 41, 'target': 42, 'label': 'defines', 'type': 'structural'}, {'source': 41, 'target': 43, 'label': 'defines', 'type': 'structural'}, {'source': 41, 'target': 44, 'label': 'defines', 'type': 'structural'}, {'source': 41, 'target': 45, 'label': 'defines', 'type': 'structural'}, {'source': 41, 'target': 46, 'label': 'defines', 'type': 'structural'}, {'source': 41, 'target': 47, 'label': 'defines', 'type': 'structural'}, {'source': 41, 'target': 48, 'label': 'defines', 'type': 'structural'}, {'source': 41, 'target': 49, 'label': 'defines', 'type': 'structural'}, {'source': 41, 'target': 50, 'label': 'defines', 'type': 'structural'}, {'source': 41, 'target': 51, 'label': 'defines', 'type': 'structural'}, {'source': 53, 'target': 54, 'label': 'defines', 'type': 'structural'}, {'source': 55, 'target': 56, 'label': 'defines', 'type': 'structural'}, {'source': 55, 'target': 57, 'label': 'defines', 'type': 'structural'}, {'source': 55, 'target': 58, 'label': 'defines', 'type': 'structural'}, {'source': 60, 'target': 61, 'label': 'contains', 'type': 'structural'}, {'source': 60, 'target': 62, 'label': 'defines', 'type': 'structural'}, {'source': 60, 'target': 63, 'label': 'defines', 'type': 'structural'}, {'source': 60, 'target': 64, 'label': 'defines', 'type': 'structural'}, {'source': 60, 'target': 65, 'label': 'defines', 'type': 'structural'}, {'source': 60, 'target': 66, 'label': 'defines', 'type': 'structural'}, {'source': 60, 'target': 67, 'label': 'defines', 'type': 'structural'}, {'source': 60, 'target': 68, 'label': 'defines', 'type': 'structural'}, {'source': 60, 'target': 69, 'label': 'defines', 'type': 'structural'}, {'source': 60, 'target': 70, 'label': 'defines', 'type': 'structural'}, {'source': 60, 'target': 71, 'label': 'defines', 'type': 'structural'}, {'source': 60, 'target': 72, 'label': 'defines', 'type': 'structural'}, {'source': 60, 'target': 73, 'label': 'defines', 'type': 'structural'}, {'source': 60, 'target': 74, 'label': 'defines', 'type': 'structural'}, {'source': 75, 'target': 76, 'label': 'contains', 'type': 'structural'}, {'source': 75, 'target': 77, 'label': 'contains', 'type': 'structural'}, {'source': 75, 'target': 78, 'label': 'defines', 'type': 'structural'}, {'source': 75, 'target': 79, 'label': 'defines', 'type': 'structural'}, {'source': 75, 'target': 80, 'label': 'defines', 'type': 'structural'}, {'source': 75, 'target': 81, 'label': 'defines', 'type': 'structural'}, {'source': 75, 'target': 82, 'label': 'defines', 'type': 'structural'}, {'source': 75, 'target': 83, 'label': 'defines', 'type': 'structural'}, {'source': 75, 'target': 84, 'label': 'defines', 'type': 'structural'}, {'source': 75, 'target': 85, 'label': 'defines', 'type': 'structural'}, {'source': 75, 'target': 86, 'label': 'defines', 'type': 'structural'}, {'source': 75, 'target': 87, 'label': 'defines', 'type': 'structural'}, {'source': 75, 'target': 88, 'label': 'defines', 'type': 'structural'}, {'source': 75, 'target': 89, 'label': 'defines', 'type': 'structural'}, {'source': 75, 'target': 90, 'label': 'defines', 'type': 'structural'}, {'source': 75, 'target': 91, 'label': 'defines', 'type': 'structural'}, {'source': 92, 'target': 93, 'label': 'defines', 'type': 'structural'}, {'source': 92, 'target': 94, 'label': 'defines', 'type': 'structural'}, {'source': 92, 'target': 95, 'label': 'defines', 'type': 'structural'}, {'source': 97, 'target': 98, 'label': 'defines', 'type': 'structural'}, {'source': 97, 'target': 99, 'label': 'defines', 'type': 'structural'}, {'source': 97, 'target': 100, 'label': 'defines', 'type': 'structural'}, {'source': 97, 'target': 101, 'label': 'defines', 'type': 'structural'}, {'source': 102, 'target': 103, 'label': 'defines', 'type': 'structural'}]);
+        
+        const container = document.getElementById('network');
+        const data = { nodes: nodes, edges: edges };
+        
+        const options = {
+            physics: {
+                enabled: true,
+                stabilization: { iterations: 200 },
+                barnesHut: {
+                    gravitationalConstant: -15000,
+                    centralGravity: 0.3,
+                    springLength: 200,
+                    damping: 0.4
+                }
+            },
+            interaction: {
+                hideEdgesOnDrag: true,
+                navigationButtons: true,
+                keyboard: true
+            },
+            nodes: {
+                borderWidth: 2,
+                borderWidthSelected: 3,
+                font: { color: '#fff', size: 13, face: 'Segoe UI' }
+            },
+            edges: {
+                width: 1.5,
+                font: { size: 10, color: '#999' }
+            }
+        };
+        
+        const network = new vis.Network(container, data, options);
+        
+        // Calculate god nodes
+        function getGodNodes() {
+            const connectivity = {};
+            edges.forEach(edge => {
+                connectivity[edge.from] = (connectivity[edge.from] || 0) + 1;
+                connectivity[edge.to] = (connectivity[edge.to] || 0) + 1;
+            });
+            
+            return Object.entries(connectivity)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5);
+        }
+        
+        // Populate god nodes
+        const godNodesList = document.getElementById('godNodes');
+        getGodNodes().forEach(([nodeId, count]) => {
+            const node = nodes.get(parseInt(nodeId));
+            const li = document.createElement('li');
+            li.textContent = node.label + ' (' + count + ')';
+            li.onclick = () => network.selectNodes([node.id]);
+            godNodesList.appendChild(li);
+        });
+        
+        // Populate all nodes
+        const nodeList = document.getElementById('nodeList');
+        nodes.forEach(node => {
+            const li = document.createElement('li');
+            li.textContent = node.label;
+            li.onclick = () => network.selectNodes([node.id]);
+            nodeList.appendChild(li);
+        });
+        
+        // Search functionality
+        document.getElementById('searchBox').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const filtered = nodes.get({
+                filter: node => node.label.toLowerCase().includes(query)
+            });
+            
+            nodeList.innerHTML = '';
+            filtered.forEach(node => {
+                const li = document.createElement('li');
+                li.textContent = node.label;
+                li.onclick = () => network.selectNodes([node.id]);
+                nodeList.appendChild(li);
+            });
+        });
+    </script>
+</body>
+</html>

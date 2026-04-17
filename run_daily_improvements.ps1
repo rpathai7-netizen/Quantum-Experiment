@@ -69,7 +69,20 @@ Set-Location $ProjectRoot
 Write-Log "Installing/verifying dependencies..."
 pip install -q black isort autopep8 pytest pytest-cov 2>&1 | Write-Log
 
-# Step 2: Run tests
+# Step 2: Knowledge Graph Update
+Write-Log ""
+Invoke-WithLog "Regenerating Knowledge Graph" `
+    "python generate_knowledge_graph.py 2>&1"
+
+# Step 3: Query Knowledge Graph for Analysis
+Write-Log ""
+Write-Log "========================================"
+Write-Log "Knowledge Graph Analysis...    "
+Write-Log "========================================"
+Invoke-WithLog "Querying Knowledge Graph" `
+    "python query_knowledge_graph.py 2>&1"
+
+# Step 4: Run tests
 Write-Log ""
 $TestPassed = Invoke-WithLog "Running Tests" `
     "python -m pytest tests/ -v --tb=short 2>&1"

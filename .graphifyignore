@@ -1,0 +1,51 @@
+# Graphify ignore patterns - files/folders excluded from knowledge graph
+# Same syntax as .gitignore
+
+# Python build and cache
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# IDE and editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+logs/
+*.log
+
+# Git
+.git/
+.gitignore
+
+# Documentation build output (but keep source docs)
+htmlcov/
+
+# Artifacts and binaries
+*.so
+*.dll
+*.exe
+
+# Node modules (if any JS)
+node_modules/
+
+# Temporary files
+*.tmp
+tmp/
+temp/
+
+# Keep: source code, tests, docs, configs
+# Keep: .py, .md, .txt, test_*.py, conftest.py
