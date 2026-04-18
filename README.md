@@ -45,6 +45,12 @@ python BEGINNERS_GUIDE.py
 - 🚗 **Route Optimization** - Deliver for less
 - 🧠 **Machine Learning** - Quantum neural networks
 
+### Cross-Platform Support:
+- ✅ **Windows** - Standalone EXE (double-click to run)
+- ✅ **macOS** - Native .app bundle  
+- ✅ **Linux** - Executable binary
+- ✅ **Automated Builds** - GitHub Actions CI/CD
+
 ---
 
 ```
