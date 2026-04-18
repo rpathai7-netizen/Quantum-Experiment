@@ -463,6 +463,12 @@ Create standalone Windows executable
 
 def main():
     """Main entry point"""
+    if len(sys.argv) > 1 and sys.argv[1] == "--create-icon-only":
+        builder = QuantumInstallerBuilder()
+        builder.create_icon()
+        print("[OK] Icon created successfully")
+        return
+
     builder = QuantumInstallerBuilder()
     success = builder.build()
 
