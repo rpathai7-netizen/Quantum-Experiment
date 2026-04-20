@@ -3,8 +3,7 @@ Beginner's Guide to Quantum Computing
 Quick introduction for users with no quantum knowledge
 """
 
-print(
-    """
+print("""
 ╔══════════════════════════════════════════════════════════════════════════╗
 ║                   QUANTUM COMPUTING FOR BEGINNERS                         ║
 ║              Learn Quantum Computing in 10 Minutes!                        ║
@@ -323,5 +322,4 @@ Example:
    ✓ How to use this platform
 
 Happy Quantum Computing! 🌟
-"""
-)
+""")

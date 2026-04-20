@@ -3,20 +3,21 @@ Quantum Experiment Platform - GUI Application
 User-friendly graphical interface for quantum computing simulations
 """
 
-import sys
 import os
+import sys
 from pathlib import Path
 
 try:
     import tkinter as tk
-    from tkinter import ttk, messagebox, filedialog
+    from tkinter import filedialog, messagebox, ttk
 except ImportError:
     print("ERROR: tkinter is required. On Linux, run: sudo apt-get install python3-tk")
     sys.exit(1)
 
-import threading
 import json
+import threading
 from datetime import datetime
+
 from integrated_platform import QuantumExperimentPlatform
 from measurement_analysis import QuantumMeasurementAnalyzer
 
@@ -48,8 +49,12 @@ class QuantumGUI:
         style = ttk.Style()
         style.theme_use("clam")
 
-        style.configure("Title.TLabel", font=("Helvetica", 16, "bold"), background="#f0f0f0")
-        style.configure("Header.TLabel", font=("Helvetica", 12, "bold"), background="#f0f0f0")
+        style.configure(
+            "Title.TLabel", font=("Helvetica", 16, "bold"), background="#f0f0f0"
+        )
+        style.configure(
+            "Header.TLabel", font=("Helvetica", 12, "bold"), background="#f0f0f0"
+        )
         style.configure("Normal.TLabel", font=("Helvetica", 10), background="#f0f0f0")
 
     def create_menu(self):
@@ -67,7 +72,9 @@ class QuantumGUI:
         menubar.add_cascade(label="Help", menu=help_menu)
         help_menu.add_command(label="About", command=self.show_about)
         help_menu.add_command(label="Documentation", command=self.show_documentation)
-        help_menu.add_command(label="Real-World Applications", command=self.show_applications)
+        help_menu.add_command(
+            label="Real-World Applications", command=self.show_applications
+        )
 
     def create_main_frame(self):
         """Create main application frame"""
@@ -111,9 +118,9 @@ class QuantumGUI:
         frame.pack(fill="both", expand=True)
 
         # Welcome section
-        ttk.Label(frame, text="Welcome to Quantum Computing!", style="Header.TLabel").pack(
-            anchor="w", pady=(0, 10)
-        )
+        ttk.Label(
+            frame, text="Welcome to Quantum Computing!", style="Header.TLabel"
+        ).pack(anchor="w", pady=(0, 10))
 
         welcome_text = (
             "This platform lets you:\n"
@@ -149,15 +156,23 @@ class QuantumGUI:
             ).pack(anchor="w", pady=5)
 
         # Qubit count
-        ttk.Label(frame, text="Number of Qubits:", style="Header.TLabel").pack(anchor="w", pady=(20, 5))
+        ttk.Label(frame, text="Number of Qubits:", style="Header.TLabel").pack(
+            anchor="w", pady=(20, 5)
+        )
 
         qubit_frame = ttk.Frame(frame)
         qubit_frame.pack(anchor="w", fill="x", pady=5)
 
-        ttk.Label(qubit_frame, text="Use slider (5-30 qubits):").pack(side="left", padx=(0, 10))
+        ttk.Label(qubit_frame, text="Use slider (5-30 qubits):").pack(
+            side="left", padx=(0, 10)
+        )
 
         self.simple_qubit_slider = ttk.Scale(
-            qubit_frame, from_=5, to=30, orient="horizontal", command=self.update_qubit_label
+            qubit_frame,
+            from_=5,
+            to=30,
+            orient="horizontal",
+            command=self.update_qubit_label,
         )
         self.simple_qubit_slider.set(10)
         self.simple_qubit_slider.pack(side="left", fill="x", expand=True)
@@ -169,7 +184,9 @@ class QuantumGUI:
         manual_frame = ttk.Frame(frame)
         manual_frame.pack(anchor="w", fill="x", pady=5)
 
-        ttk.Label(manual_frame, text="Or enter manually (5-6000):").pack(side="left", padx=(0, 10))
+        ttk.Label(manual_frame, text="Or enter manually (5-6000):").pack(
+            side="left", padx=(0, 10)
+        )
         self.simple_qubit_entry = ttk.Entry(manual_frame, width=10)
         self.simple_qubit_entry.pack(side="left")
         self.simple_qubit_entry.insert(0, "10")
@@ -182,7 +199,9 @@ class QuantumGUI:
         shots_frame = ttk.Frame(frame)
         shots_frame.pack(anchor="w", fill="x", pady=5)
 
-        self.simple_shots = ttk.Scale(shots_frame, from_=10, to=1000, orient="horizontal")
+        self.simple_shots = ttk.Scale(
+            shots_frame, from_=10, to=1000, orient="horizontal"
+        )
         self.simple_shots.set(100)
         self.simple_shots.pack(side="left", fill="x", expand=True)
 
@@ -199,17 +218,21 @@ class QuantumGUI:
         )
         self.simple_run_btn.pack(side="left", padx=5)
 
-        ttk.Button(button_frame, text="📊 View Results", command=self.show_results).pack(
-            side="left", padx=5
-        )
+        ttk.Button(
+            button_frame, text="📊 View Results", command=self.show_results
+        ).pack(side="left", padx=5)
 
         # Results display
-        ttk.Label(frame, text="Results:", style="Header.TLabel").pack(anchor="w", pady=(20, 5))
+        ttk.Label(frame, text="Results:", style="Header.TLabel").pack(
+            anchor="w", pady=(20, 5)
+        )
 
         self.simple_results_text = tk.Text(frame, height=10, width=60, bg="white")
         self.simple_results_text.pack(fill="both", expand=True, pady=5)
 
-        scrollbar = ttk.Scrollbar(frame, orient="vertical", command=self.simple_results_text.yview)
+        scrollbar = ttk.Scrollbar(
+            frame, orient="vertical", command=self.simple_results_text.yview
+        )
         scrollbar.pack(side="right", fill="y")
         self.simple_results_text.config(yscrollcommand=scrollbar.set)
 
@@ -218,10 +241,14 @@ class QuantumGUI:
         frame = ttk.Frame(self.tab_advanced, padding=20)
         frame.pack(fill="both", expand=True)
 
-        ttk.Label(frame, text="Advanced Configuration", style="Header.TLabel").pack(anchor="w", pady=(0, 20))
+        ttk.Label(frame, text="Advanced Configuration", style="Header.TLabel").pack(
+            anchor="w", pady=(0, 20)
+        )
 
         # Circuit type selection
-        ttk.Label(frame, text="Circuit Type:", style="Header.TLabel").pack(anchor="w", pady=(10, 5))
+        ttk.Label(frame, text="Circuit Type:", style="Header.TLabel").pack(
+            anchor="w", pady=(10, 5)
+        )
 
         circuit_types = [
             "entangled_chain",
@@ -236,21 +263,29 @@ class QuantumGUI:
         ]
 
         self.adv_circuit = tk.StringVar(value="entangled_chain")
-        circuit_combo = ttk.Combobox(frame, textvariable=self.adv_circuit, values=circuit_types, state="readonly")
+        circuit_combo = ttk.Combobox(
+            frame, textvariable=self.adv_circuit, values=circuit_types, state="readonly"
+        )
         circuit_combo.pack(anchor="w", fill="x", pady=(0, 20))
 
         # Qubit configuration
-        ttk.Label(frame, text="Advanced Qubit Configuration:", style="Header.TLabel").pack(
-            anchor="w", pady=(10, 5)
-        )
+        ttk.Label(
+            frame, text="Advanced Qubit Configuration:", style="Header.TLabel"
+        ).pack(anchor="w", pady=(10, 5))
 
         adv_qubit_frame = ttk.LabelFrame(frame, text="Qubit Count", padding=10)
         adv_qubit_frame.pack(fill="x", pady=10)
 
-        ttk.Label(adv_qubit_frame, text="For large circuits (>30 qubits), analytical").pack(anchor="w")
-        ttk.Label(adv_qubit_frame, text="methods are used automatically.").pack(anchor="w")
+        ttk.Label(
+            adv_qubit_frame, text="For large circuits (>30 qubits), analytical"
+        ).pack(anchor="w")
+        ttk.Label(adv_qubit_frame, text="methods are used automatically.").pack(
+            anchor="w"
+        )
 
-        ttk.Label(adv_qubit_frame, text="Enter qubits (5-6000):").pack(anchor="w", pady=(10, 5))
+        ttk.Label(adv_qubit_frame, text="Enter qubits (5-6000):").pack(
+            anchor="w", pady=(10, 5)
+        )
         self.adv_qubits = ttk.Entry(adv_qubit_frame)
         self.adv_qubits.insert(0, "20")
         self.adv_qubits.pack(fill="x")
@@ -263,25 +298,31 @@ class QuantumGUI:
         shots_frame = ttk.LabelFrame(frame, text="Number of Shots", padding=10)
         shots_frame.pack(fill="x", pady=10)
 
-        ttk.Label(shots_frame, text="How many times to run the circuit:").pack(anchor="w")
+        ttk.Label(shots_frame, text="How many times to run the circuit:").pack(
+            anchor="w"
+        )
         self.adv_shots = ttk.Scale(shots_frame, from_=10, to=10000, orient="horizontal")
         self.adv_shots.set(1000)
         self.adv_shots.pack(fill="x", pady=5)
 
         self.adv_shots_label = ttk.Label(shots_frame, text="1000")
         self.adv_shots_label.pack(anchor="w")
-        self.adv_shots.config(command=lambda x: self.adv_shots_label.config(text=str(int(float(x)))))
+        self.adv_shots.config(
+            command=lambda x: self.adv_shots_label.config(text=str(int(float(x))))
+        )
 
         # Run buttons
         button_frame = ttk.Frame(frame)
         button_frame.pack(fill="x", pady=(30, 0))
 
-        ttk.Button(button_frame, text="▶️ Run Advanced", command=self.run_advanced_simulation).pack(
-            side="left", padx=5
-        )
+        ttk.Button(
+            button_frame, text="▶️ Run Advanced", command=self.run_advanced_simulation
+        ).pack(side="left", padx=5)
 
         # Results
-        ttk.Label(frame, text="Advanced Results:", style="Header.TLabel").pack(anchor="w", pady=(20, 5))
+        ttk.Label(frame, text="Advanced Results:", style="Header.TLabel").pack(
+            anchor="w", pady=(20, 5)
+        )
 
         self.adv_results_text = tk.Text(frame, height=8, width=60, bg="white")
         self.adv_results_text.pack(fill="both", expand=True, pady=5)
@@ -292,7 +333,9 @@ class QuantumGUI:
         frame.pack(fill="both", expand=True)
 
         ttk.Label(
-            frame, text="Real-World Applications for Quantum Computing", style="Header.TLabel"
+            frame,
+            text="Real-World Applications for Quantum Computing",
+            style="Header.TLabel",
         ).pack(anchor="w", pady=(0, 20))
 
         usecases = [
@@ -351,7 +394,9 @@ class QuantumGUI:
         usecases_frame.rowconfigure(2, weight=1)
 
         # Info display
-        ttk.Label(frame, text="Learn More:", style="Header.TLabel").pack(anchor="w", pady=(10, 5))
+        ttk.Label(frame, text="Learn More:", style="Header.TLabel").pack(
+            anchor="w", pady=(10, 5)
+        )
 
         self.usecase_text = tk.Text(frame, height=6, width=60, bg="white")
         self.usecase_text.pack(fill="both", expand=True, pady=5)
@@ -374,18 +419,24 @@ class QuantumGUI:
             shots = int(float(self.simple_shots.get()))
 
             if qubits < 5 or qubits > 6000:
-                messagebox.showerror("Invalid Input", "Qubits must be between 5 and 6000")
+                messagebox.showerror(
+                    "Invalid Input", "Qubits must be between 5 and 6000"
+                )
                 return
 
             if shots < 10 or shots > 10000:
-                messagebox.showerror("Invalid Input", "Shots must be between 10 and 10000")
+                messagebox.showerror(
+                    "Invalid Input", "Shots must be between 10 and 10000"
+                )
                 return
 
             self.is_running = True
             self.simple_run_btn.config(state="disabled")
 
             # Run in thread
-            thread = threading.Thread(target=self._run_simple_thread, args=(circuit_type, qubits, shots))
+            thread = threading.Thread(
+                target=self._run_simple_thread, args=(circuit_type, qubits, shots)
+            )
             thread.daemon = True
             thread.start()
 
@@ -399,7 +450,9 @@ class QuantumGUI:
         try:
             self.simple_results_text.config(state="normal")
             self.simple_results_text.delete("1.0", "end")
-            self.simple_results_text.insert("end", f"Running {circuit_type} with {qubits} qubits...\n\n")
+            self.simple_results_text.insert(
+                "end", f"Running {circuit_type} with {qubits} qubits...\n\n"
+            )
             self.simple_results_text.update()
 
             # Create and run circuit
@@ -417,7 +470,9 @@ class QuantumGUI:
 
             # Get counts
             counts = self.results.get("counts", {})
-            sorted_counts = sorted(counts.items(), key=lambda x: x[1], reverse=True)[:10]
+            sorted_counts = sorted(counts.items(), key=lambda x: x[1], reverse=True)[
+                :10
+            ]
 
             for state, count in sorted_counts:
                 percentage = (count / shots) * 100
@@ -430,7 +485,9 @@ class QuantumGUI:
         except Exception as e:
             self.simple_results_text.config(state="normal")
             self.simple_results_text.delete("1.0", "end")
-            self.simple_results_text.insert("end", f"❌ Error: {str(e)}\n\nTip: Try with fewer qubits (10-15)")
+            self.simple_results_text.insert(
+                "end", f"❌ Error: {str(e)}\n\nTip: Try with fewer qubits (10-15)"
+            )
 
         finally:
             self.is_running = False
@@ -448,7 +505,9 @@ class QuantumGUI:
             shots = int(float(self.adv_shots.get()))
 
             if qubits < 5 or qubits > 6000:
-                messagebox.showerror("Invalid Input", "Qubits must be between 5 and 6000")
+                messagebox.showerror(
+                    "Invalid Input", "Qubits must be between 5 and 6000"
+                )
                 return
 
             self.is_running = True

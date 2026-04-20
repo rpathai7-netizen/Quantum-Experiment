@@ -3,10 +3,11 @@ Real-World Quantum Computing Use Cases
 Practical examples for everyday quantum computing applications
 """
 
-from integrated_platform import QuantumExperimentPlatform
-from measurement_analysis import QuantumMeasurementAnalyzer
 import json
 from pathlib import Path
+
+from integrated_platform import QuantumExperimentPlatform
+from measurement_analysis import QuantumMeasurementAnalyzer
 
 
 class QuantumUseCases:
@@ -356,8 +357,7 @@ class QuantumUseCases:
 
     def print_summary(self):
         """Print summary of all use cases"""
-        print(
-            """
+        print("""
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  REAL-WORLD QUANTUM COMPUTING IMPACT SUMMARY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -422,8 +422,7 @@ class QuantumUseCases:
    - Transition to real quantum hardware
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-"""
-        )
+""")
 
 
 def main():

@@ -3,61 +3,117 @@ import json
 import re
 from pathlib import Path
 
+
 def parse_installation_md(file_path):
     """
     Parses INSTALLATION.md to extract sections, steps, and code blocks.
     Returns a list of nodes and edges for the graph.
     """
-    content = Path(file_path).read_text(encoding='utf-8')
-    
+    content = Path(file_path).read_text(encoding="utf-8")
+
     nodes = []
     edges = []
-    
+
     # Define sections to extract
     sections = [
-        {"id": "pre", "label": "Prerequisites", "type": "start", "pattern": r"## 📋 Prerequisites(.*?)(?=##|$)", "color": "#00d2ff"},
-        {"id": "quick", "label": "Quick Installation", "type": "step", "pattern": r"## 🚀 Quick Installation(.*?)(?=##|$)", "color": "#3a7bd5"},
-        {"id": "full", "label": "Full Installation", "type": "step", "pattern": r"## 📦 Full Installation(.*?)(?=##|$)", "color": "#6a11cb"},
-        {"id": "cloud", "label": "Cloud Provider Setup", "type": "config", "pattern": r"## ☁️ Optional: Cloud Provider Setup(.*?)(?=##|$)", "color": "#2575fc"},
-        {"id": "verify", "label": "Verify Installation", "type": "verify", "pattern": r"## ✅ Verify Installation(.*?)(?=##|$)", "color": "#11998e"},
-        {"id": "trouble", "label": "Troubleshooting", "type": "help", "pattern": r"## 🔧 Troubleshooting(.*?)(?=##|$)", "color": "#f85032"},
-        {"id": "next", "label": "Next Steps", "type": "end", "pattern": r"## 📚 Next Steps(.*?)(?=##|$)", "color": "#b21f1f"}
+        {
+            "id": "pre",
+            "label": "Prerequisites",
+            "type": "start",
+            "pattern": r"## 📋 Prerequisites(.*?)(?=##|$)",
+            "color": "#00d2ff",
+        },
+        {
+            "id": "quick",
+            "label": "Quick Installation",
+            "type": "step",
+            "pattern": r"## 🚀 Quick Installation(.*?)(?=##|$)",
+            "color": "#3a7bd5",
+        },
+        {
+            "id": "full",
+            "label": "Full Installation",
+            "type": "step",
+            "pattern": r"## 📦 Full Installation(.*?)(?=##|$)",
+            "color": "#6a11cb",
+        },
+        {
+            "id": "cloud",
+            "label": "Cloud Provider Setup",
+            "type": "config",
+            "pattern": r"## ☁️ Optional: Cloud Provider Setup(.*?)(?=##|$)",
+            "color": "#2575fc",
+        },
+        {
+            "id": "verify",
+            "label": "Verify Installation",
+            "type": "verify",
+            "pattern": r"## ✅ Verify Installation(.*?)(?=##|$)",
+            "color": "#11998e",
+        },
+        {
+            "id": "trouble",
+            "label": "Troubleshooting",
+            "type": "help",
+            "pattern": r"## 🔧 Troubleshooting(.*?)(?=##|$)",
+            "color": "#f85032",
+        },
+        {
+            "id": "next",
+            "label": "Next Steps",
+            "type": "end",
+            "pattern": r"## 📚 Next Steps(.*?)(?=##|$)",
+            "color": "#b21f1f",
+        },
     ]
-    
+
     node_id = 0
     section_nodes = {}
-    
+
     for sec in sections:
         match = re.search(sec["pattern"], content, re.DOTALL)
         if match:
             text = match.group(1).strip()
             # Extract code blocks
-            codes = re.findall(r"```(?:bash|cmd|powershell|python|)\n(.*?)\n```", text, re.DOTALL)
-            
+            codes = re.findall(
+                r"```(?:bash|cmd|powershell|python|)\n(.*?)\n```", text, re.DOTALL
+            )
+
             node = {
                 "id": node_id,
                 "label": sec["label"],
                 "type": sec["type"],
                 "content": text,
                 "codes": codes,
-                "color": sec["color"]
+                "color": sec["color"],
             }
             nodes.append(node)
             section_nodes[sec["id"]] = node_id
             node_id += 1
 
     # Define edges based on typical installation flow
-    flow = [("pre", "quick"), ("quick", "full"), ("quick", "verify"), ("full", "cloud"), ("cloud", "verify"), ("verify", "next"), ("trouble", "verify")]
-    
+    flow = [
+        ("pre", "quick"),
+        ("quick", "full"),
+        ("quick", "verify"),
+        ("full", "cloud"),
+        ("cloud", "verify"),
+        ("verify", "next"),
+        ("trouble", "verify"),
+    ]
+
     for start_id, end_id in flow:
         if start_id in section_nodes and end_id in section_nodes:
-            edges.append({
-                "from": section_nodes[start_id],
-                "to": section_nodes[end_id],
-                "label": "Next Step"
-            })
-            
+            edges.append(
+                {
+                    "from": section_nodes[start_id],
+                    "to": section_nodes[end_id],
+                    "label": "Next Step",
+                }
+            )
+
     return nodes, edges
+
 
 def generate_html(nodes, edges, output_path):
     """
@@ -343,14 +399,15 @@ def generate_html(nodes, edges, output_path):
     # Replace placeholders with actual JSON
     html_content = html_template.replace("__NODES_JSON__", json.dumps(nodes))
     html_content = html_content.replace("__EDGES_JSON__", json.dumps(edges))
-    
-    Path(output_path).write_text(html_content, encoding='utf-8')
+
+    Path(output_path).write_text(html_content, encoding="utf-8")
     print(f"Successfully generated {output_path}")
+
 
 if __name__ == "__main__":
     project_root = Path("c:/Users/R/Desktop/Quantum Experiment")
     install_md = project_root / "INSTALLATION.md"
     output_html = project_root / "antigravity_install_graph.html"
-    
+
     nodes, edges = parse_installation_md(install_md)
     generate_html(nodes, edges, output_html)

@@ -3,8 +3,8 @@ Quantum Experiment Platform - Application Launcher
 Simple entry point for users
 """
 
-import sys
 import os
+import sys
 from pathlib import Path
 
 # Add repo to path
@@ -20,15 +20,11 @@ print("""
 print("Checking dependencies...")
 missing_packages = []
 
-required = {
-    'qiskit': 'Qiskit',
-    'numpy': 'NumPy',
-    'tkinter': 'tkinter'
-}
+required = {"qiskit": "Qiskit", "numpy": "NumPy", "tkinter": "tkinter"}
 
 for module, name in required.items():
     try:
-        if module == 'tkinter':
+        if module == "tkinter":
             import tkinter
         else:
             __import__(module)
@@ -46,6 +42,7 @@ print("\n🚀 Launching application...\n")
 
 try:
     from gui_application import main
+
     main()
 except Exception as e:
     print(f"❌ Error launching application: {e}")

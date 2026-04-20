@@ -8,45 +8,52 @@ import subprocess
 from pathlib import Path
 from typing import Optional
 
-def generate_visualization(graph_path: str = "graphify-out/graph.json", 
-                          output_path: str = "graphify-out/graph-visualization.html") -> bool:
+
+def generate_visualization(
+    graph_path: str = "graphify-out/graph.json",
+    output_path: str = "graphify-out/graph-visualization.html",
+) -> bool:
     """Generate interactive HTML visualization of the knowledge graph"""
-    
+
     graph_file = Path(graph_path)
     if not graph_file.exists():
         print(f"❌ Graph file not found: {graph_path}")
         return False
-    
-    with open(graph_file, 'r') as f:
+
+    with open(graph_file, "r") as f:
         graph_data = json.load(f)
-    
-    nodes = graph_data.get('nodes', [])
-    edges = graph_data.get('edges', [])
-    
+
+    nodes = graph_data.get("nodes", [])
+    edges = graph_data.get("edges", [])
+
     # Create Vis.js nodes and edges arrays
     vis_nodes = []
     for node in nodes:
-        vis_nodes.append({
-            'id': node['id'],
-            'label': node['label'],
-            'title': f"{node['type']}: {node['label']}",
-            'color': get_node_color(node.get('type', 'unknown')),
-            'size': min(30, 15 + len(node.get('label', '')) / 4),
-            'font': {'size': 12}
-        })
-    
+        vis_nodes.append(
+            {
+                "id": node["id"],
+                "label": node["label"],
+                "title": f"{node['type']}: {node['label']}",
+                "color": get_node_color(node.get("type", "unknown")),
+                "size": min(30, 15 + len(node.get("label", "")) / 4),
+                "font": {"size": 12},
+            }
+        )
+
     vis_edges = []
     for edge in edges:
-        vis_edges.append({
-            'from': edge['source'],
-            'to': edge['target'],
-            'label': edge.get('label', ''),
-            'title': f"{edge.get('label', 'unknown')} relationship",
-            'arrows': 'to',
-            'color': {'color': '#ccc', 'highlight': '#ff0000'},
-            'smooth': {'type': 'continuous'}
-        })
-    
+        vis_edges.append(
+            {
+                "from": edge["source"],
+                "to": edge["target"],
+                "label": edge.get("label", ""),
+                "title": f"{edge.get('label', 'unknown')} relationship",
+                "arrows": "to",
+                "color": {"color": "#ccc", "highlight": "#ff0000"},
+                "smooth": {"type": "continuous"},
+            }
+        )
+
     # Generate HTML
     html_content = f"""<!DOCTYPE html>
 <html>
@@ -292,13 +299,13 @@ def generate_visualization(graph_path: str = "graphify-out/graph.json",
     </script>
 </body>
 </html>"""
-    
+
     output_file = Path(output_path)
     output_file.parent.mkdir(parents=True, exist_ok=True)
-    
-    with open(output_file, 'w', encoding='utf-8') as f:
+
+    with open(output_file, "w", encoding="utf-8") as f:
         f.write(html_content)
-    
+
     print(f"✅ Generated visualization: {output_path}")
     return True
 
@@ -306,13 +313,13 @@ def generate_visualization(graph_path: str = "graphify-out/graph.json",
 def get_node_color(node_type: str) -> str:
     """Get color for node type"""
     colors = {
-        'module': '#FF6B6B',
-        'class': '#4ECDC4',
-        'function': '#45B7D1',
-        'method': '#96CEB4',
-        'variable': '#FFEAA7',
+        "module": "#FF6B6B",
+        "class": "#4ECDC4",
+        "function": "#45B7D1",
+        "method": "#96CEB4",
+        "variable": "#FFEAA7",
     }
-    return colors.get(node_type, '#FFA07A')
+    return colors.get(node_type, "#FFA07A")
 
 
 if __name__ == "__main__":
