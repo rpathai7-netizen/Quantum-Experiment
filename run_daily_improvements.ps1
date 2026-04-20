@@ -1,22 +1,6 @@
 #!/usr/bin/env powershell
-<#
-.SYNOPSIS
-    Daily improvement run for Quantum Experiment Platform
-    Scheduled to run at 10:05 AM Pakistan Time (PKT)
-    
-.DESCRIPTION
-    This script runs the complete improvement cycle:
-    1. Tests
-    2. Code quality analysis
-    3. Performance profiling
-    4. Code improvements (formatting, imports, style)
-    5. Commits improvements
-    6. Pushes to GitHub
-    
-.NOTES
-    Windows Task Scheduler: Runs daily at 10:05 AM
-    Timezone: Pakistan (UTC+5:00)
-#>
+# Daily improvement run for Quantum Experiment Platform
+# Scheduled to run at 10:05 AM Pakistan Time (PKT)
 
 # Configuration
 $ProjectRoot = "c:\Users\R\Desktop\Quantum Experiment"
@@ -58,10 +42,10 @@ function Invoke-WithLog {
     }
 }
 
-Write-Log "╔════════════════════════════════════════════════════════════╗"
-Write-Log "║   QUANTUM EXPERIMENT PLATFORM - DAILY IMPROVEMENTS        ║"
-Write-Log "║   Start Time: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') PKT                ║"
-Write-Log "╚════════════════════════════════════════════════════════════╝"
+Write-Log "========================================"
+Write-Log "QUANTUM EXPERIMENT - DAILY IMPROVEMENTS"
+Write-Log "Start Time: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') PKT"
+Write-Log "========================================"
 
 Set-Location $ProjectRoot
 
@@ -77,7 +61,7 @@ Invoke-WithLog "Regenerating Knowledge Graph" `
 # Step 3: Query Knowledge Graph for Analysis
 Write-Log ""
 Write-Log "========================================"
-Write-Log "Knowledge Graph Analysis...    "
+Write-Log "Knowledge Graph Analysis"
 Write-Log "========================================"
 Invoke-WithLog "Querying Knowledge Graph" `
     "python query_knowledge_graph.py"
@@ -87,20 +71,20 @@ Write-Log ""
 $TestPassed = Invoke-WithLog "Running Tests" `
     "python -m pytest tests/ -v --tb=short"
 
-# Step 3: Code quality analysis
+# Step 5: Code quality analysis
 Write-Log ""
 Invoke-WithLog "Analyzing Code Quality" `
     "python scripts/analyze_code_quality.py"
 
-# Step 4: Performance profiling (with timeout to keep it quick)
+# Step 6: Performance profiling
 Write-Log ""
 Invoke-WithLog "Performance Profiling" `
     "python scripts/performance_profiler.py"
 
-# Step 5: Code improvements
+# Step 7: Code improvements
 Write-Log ""
 Write-Log "========================================"
-Write-Log "Running Code Improvements...    "
+Write-Log "Running Code Improvements"
 Write-Log "========================================"
 
 # Black formatting
@@ -120,20 +104,20 @@ if ($GitStatus) {
     git add -A 2>&1 | Write-Log
     
     # Commit with timestamp
-    $CommitMessage = "🤖 Automated daily improvements $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
+    $CommitMessage = "Automated daily improvements $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
     git commit -m $CommitMessage 2>&1 | Write-Log
     
     # Push to GitHub
     Write-Log "Pushing improvements to GitHub..."
     git push origin main 2>&1 | Write-Log
     
-    Write-Log "✅ Improvements committed and pushed"
+    Write-Log "Improvements committed and pushed"
 }
 else {
-    Write-Log "✅ No code improvements needed (already optimal)"
+    Write-Log "No code improvements needed (already optimal)"
 }
 
-# Step 6: Summary
+# Step 8: Summary
 Write-Log ""
 Write-Log "========================================"
 Write-Log "DAILY IMPROVEMENT CYCLE COMPLETE"
@@ -141,8 +125,6 @@ Write-Log "========================================"
 $EndTime = Get-Date
 $Duration = $EndTime - $StartTime
 Write-Log "Total Duration: $($Duration.TotalMinutes) minutes"
-Write-Log "Tests Passed: $(if($TestPassed) { '[PASS] Yes' } else { '[WARNING] Check logs' })"
+Write-Log "Tests Passed: $(if($TestPassed) { '[PASS]' } else { '[CHECK LOGS]' })"
 Write-Log "End Time: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') PKT"
-Write-Log ""
-Write-Log "[LOGS] Log file: $LogFile"
-Write-Log "[GITHUB] Repository: https://github.com/rpathai7-netizen/Quantum-Experiment"
+Write-Log "Log file: $LogFile"
