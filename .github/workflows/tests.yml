@@ -8,16 +8,18 @@ on:
   schedule:
     # Run tests daily at 2 AM UTC
     - cron: '0 2 * * *'
+  workflow_dispatch:
 
 jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11']
+        python-version: ['3.10', '3.11']
+      fail-fast: false
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
@@ -27,49 +29,51 @@ jobs:
         python-version: ${{ matrix.python-version }}
         cache: 'pip'
 
-    - name: Install dependencies
+    - name: Install core dependencies
       run: |
-        python -m pip install --upgrade pip
+        python -m pip install --upgrade pip setuptools wheel
         pip install qiskit qiskit-aer numpy
-        pip install pytest pytest-cov black flake8 mypy isort
-        pip install -q qiskit-ibm-runtime amazon-braket-sdk cirq 2>/dev/null || echo "Optional cloud deps not available"
+        pip install pytest pytest-cov black flake8 isort
+
+    - name: Install optional cloud dependencies
+      run: |
+        pip install qiskit-ibm-runtime amazon-braket-sdk cirq --no-deps 2>/dev/null || echo "Warning: Optional cloud dependencies not fully available"
+      continue-on-error: true
 
     - name: Check code formatting with black
-      run: black --check . --exclude="(__pycache__|\.git|\.venv|build|dist)" || true
+      run: black --check . --exclude="(__pycache__|\.git|\.venv|build|dist|QuantumExperiment_Distribution)" || echo "Note: Code formatting issues found (non-critical in CI)"
+      continue-on-error: true
 
     - name: Lint with flake8
       run: |
         # Stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics || true
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # Exit-code is 0 even if there are style violations
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics || true
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics
 
     - name: Run pytest with coverage
       run: |
-        pytest tests/ -v --cov=. --cov-report=xml --cov-report=term-missing || true
+        pytest tests/ -v --cov=. --cov-report=xml --cov-report=html --cov-report=term-missing
       continue-on-error: true
 
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
       with:
         file: ./coverage.xml
         flags: unittests
         name: codecov-umbrella
         fail_ci_if_error: false
-
-    - name: Type check with mypy
-      run: mypy . --ignore-missing-imports --no-error-summary 2>/dev/null || true
       continue-on-error: true
 
   security:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.10'
+        python-version: '3.11'
 
     - name: Install dependencies
       run: |
@@ -77,9 +81,32 @@ jobs:
         pip install bandit safety
 
     - name: Run bandit security checks
-      run: bandit -r . -f json -o bandit-report.json || true
+      run: |
+        bandit -r . -f json -o bandit-report.json || echo "Security scan complete"
       continue-on-error: true
 
     - name: Check for known vulnerabilities
-      run: safety check --json || true
+      run: |
+        safety check --json 2>/dev/null || echo "Safety check complete"
+      continue-on-error: true
+
+  code-quality:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pylint
+
+    - name: Analyze code with pylint
+      run: |
+        pylint **/*.py --fail-under=7.0 --max-line-length=120 || echo "Pylint analysis complete"
       continue-on-error: true

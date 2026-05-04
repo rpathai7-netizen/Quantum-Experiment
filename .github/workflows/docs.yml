@@ -2,28 +2,30 @@ name: Documentation Generation
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main ]
   schedule:
-    # Run documentation generation daily at 5 AM UTC
-    - cron: '0 5 * * *'
+    # Run documentation generation weekly on Sunday at 5 AM UTC
+    - cron: '0 5 * * 0'
+  workflow_dispatch:
 
 jobs:
   docs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v4
 
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.10'
+        python-version: '3.11'
         cache: 'pip'
 
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install pdoc3 pydoc
+        python -m pip install --upgrade pip setuptools
+        pip install pdoc3 markdown
 
     - name: Generate API documentation
       run: |
@@ -33,6 +35,7 @@ jobs:
         """Generate API documentation from docstrings"""
         import os
         import sys
+        from datetime import datetime
         
         modules = [
             'scalable_simulator',
@@ -44,25 +47,30 @@ jobs:
         ]
         
         print("Generating API documentation...")
+        existing_modules = []
         for module in modules:
             if os.path.exists(f"{module}.py"):
-                print(f"  Documenting {module}...")
+                print(f"  Found {module}.py")
+                existing_modules.append(module)
         
         # Create module overview
         with open('docs/api/MODULES.md', 'w') as f:
             f.write("# API Reference\n\n")
-            for module in modules:
+            f.write(f"Generated: {datetime.now().isoformat()}\n\n")
+            for module in existing_modules:
                 f.write(f"## {module}\n")
-                f.write(f"See [`{module}.py`](../{module}.py) for implementation details.\n\n")
+                f.write(f"See [`{module}.py`](../../{module}.py) for implementation details.\n\n")
         
-        print("Documentation generation complete!")
+        print(f"Documentation generation complete! Found {len(existing_modules)} modules.")
         EOF
         python generate_docs.py
 
-    - name: Create module docstrings summary
+    - name: Create module summary
       run: |
         cat > MODULE_SUMMARY.md << 'EOF'
         # Module Summary
+        
+        Generated: $(date -u)
         
         ## Core Modules
         
@@ -97,6 +105,32 @@ jobs:
         Unified interface combining all components.
         
         ## Documentation Files
+        - README.md: Project overview
+        - QUICKSTART.md: Getting started guide
+        - INSTALLATION.md: Setup instructions
+        - FEATURES.md: Complete feature list
+        - FAQ.md: Frequently asked questions
+        EOF
+        cat MODULE_SUMMARY.md
+
+    - name: Validate documentation
+      run: |
+        if [ -f docs/api/MODULES.md ]; then
+          echo "✓ API documentation generated"
+        else
+          echo "✗ Failed to generate API documentation"
+          exit 1
+        fi
+
+    - name: Upload documentation artifacts
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: documentation
+        path: |
+          docs/
+          MODULE_SUMMARY.md
+        retention-days: 30
         
         - **README.md**: Project overview and quick start
         - **FEATURES.md**: Detailed feature list
